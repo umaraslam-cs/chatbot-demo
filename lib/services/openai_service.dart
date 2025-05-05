@@ -45,19 +45,52 @@ Base your answers only on provided car data.
 
     if (response.statusCode == 200) {
       final stream = response.stream.transform(utf8.decoder);
+      String buffer = '';
 
-      await for (var line in stream) {
-        for (final dataLine in line.trim().split('\n')) {
-          if (dataLine.startsWith('data:')) {
-            final jsonStr = dataLine.replaceFirst('data: ', '');
+      await for (var chunk in stream) {
+        buffer += chunk;
+
+        // Process complete lines
+        while (buffer.contains('\n')) {
+          final lineEnd = buffer.indexOf('\n');
+          final line = buffer.substring(0, lineEnd).trim();
+          buffer = buffer.substring(lineEnd + 1);
+
+          if (line.startsWith('data:')) {
+            final jsonStr = line.replaceFirst('data: ', '');
             if (jsonStr.trim() == '[DONE]') {
               return;
             }
 
-            final json = jsonDecode(jsonStr);
-            final content = json['choices'][0]['delta']['content'];
-            if (content != null) {
-              yield content;
+            try {
+              final json = jsonDecode(jsonStr);
+              final content = json['choices'][0]['delta']['content'];
+              if (content != null) {
+                yield content;
+              }
+            } catch (e) {
+              print('Error parsing JSON: $e');
+              print('Problematic JSON string: $jsonStr');
+            }
+          }
+        }
+      }
+
+      // Process any remaining data in buffer
+      if (buffer.isNotEmpty) {
+        final line = buffer.trim();
+        if (line.startsWith('data:')) {
+          final jsonStr = line.replaceFirst('data: ', '');
+          if (jsonStr.trim() != '[DONE]') {
+            try {
+              final json = jsonDecode(jsonStr);
+              final content = json['choices'][0]['delta']['content'];
+              if (content != null) {
+                yield content;
+              }
+            } catch (e) {
+              print('Error parsing JSON: $e');
+              print('Problematic JSON string: $jsonStr');
             }
           }
         }
