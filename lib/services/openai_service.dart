@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import '../models/message.dart';
 
 class OpenAIService {
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
@@ -13,14 +13,14 @@ class OpenAIService {
     }
   }
 
-  Stream<String> getResponseStream(String userMessage) async* {
+  Stream<String> getResponseStream(String userMessage, List<Message> previousMessages) async* {
     final request = http.Request('POST', Uri.parse(_baseUrl))
       ..headers.addAll({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $_apiKey',
       })
       ..body = jsonEncode({
-        'model': 'gpt-4o',
+        'model': 'gpt-4-turbo',
         'stream': true,
         'messages': [
           {
@@ -37,6 +37,11 @@ Your job is to provide accurate, up-to-date answers to customer questions about 
 Base your answers only on provided car data.
 '''
           },
+          // Add previous messages in reverse order (oldest first)
+          ...previousMessages.reversed.map((msg) => {
+                'role': msg.authorId == 'user' ? 'user' : 'assistant',
+                'content': msg.text,
+              }),
           {'role': 'user', 'content': userMessage},
         ],
       });

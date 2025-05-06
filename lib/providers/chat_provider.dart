@@ -36,7 +36,7 @@ class ChatNotifier extends _$ChatNotifier {
       text: '...',
       createdAt: DateTime.now(),
       authorId: 'assistant',
-      authorName: 'Assistant',
+      authorName: 'AI Assistant',
     );
 
     // Add both user and assistant placeholder
@@ -48,7 +48,9 @@ class ChatNotifier extends _$ChatNotifier {
 
     try {
       final openAIService = OpenAIService();
-      final stream = openAIService.getResponseStream(text);
+      // Get all messages except the current assistant placeholder
+      final previousMessages = state.messages.where((msg) => msg.id != assistantMessageId).toList();
+      final stream = openAIService.getResponseStream(text, previousMessages);
 
       await for (final chunk in stream) {
         final updatedMessages = state.messages.map((msg) {
@@ -83,7 +85,7 @@ class ChatNotifier extends _$ChatNotifier {
       text: 'Hello! I\'m your car showroom assistant. Ask me anything about our cars!',
       createdAt: DateTime.now(),
       authorId: 'assistant',
-      authorName: 'Assistant',
+      authorName: 'AI Assistant',
     );
 
     state = state.copyWith(
