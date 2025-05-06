@@ -2,7 +2,7 @@
 
 # Car Showroom Chatbot
 
-A Flutter-based chatbot application that provides information about car models, specifications, features, and pricing using OpenAI's GPT-4 API.
+A Flutter-based chatbot application that provides information about car models, specifications, features, and pricing using OpenAI's GPT-4 API. This is a demo application that can be easily adapted for use in any field by modifying the system instructions in the OpenAI service.
 
 ## Features
 
@@ -63,6 +63,18 @@ flutter run
 - Keep your API key secure and don't share it publicly
 - The chatbot uses GPT-4 model for generating responses
 - The system is configured to provide car showroom-specific information
+
+## Customization
+
+The chatbot can be easily adapted for use in any field by modifying the system instructions in the `OpenAIService` class. The instructions are located in the `content` parameter of the system message in `lib/services/openai_service.dart`. Simply update the instructions to match your desired use case, and the chatbot will respond accordingly.
+
+For example, to change it from a car showroom chatbot to a restaurant chatbot, you would modify the system instructions to include information about:
+- Menu items and prices
+- Operating hours
+- Reservation policies
+- Special offers
+- Dietary restrictions
+- And other restaurant-specific details
 
 ## Getting Started with Flutter
 
