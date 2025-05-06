@@ -1,3 +1,5 @@
+![License](https://img.shields.io/badge/License-MIT-green)
+
 # Car Showroom Chatbot
 
 A Flutter-based chatbot application that provides information about car models, specifications, features, and pricing using OpenAI's GPT-4 API.
